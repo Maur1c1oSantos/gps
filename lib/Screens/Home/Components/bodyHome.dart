@@ -1,11 +1,10 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, library_prefixes, avoid_print, non_constant_identifier_names
 
 import 'package:app_gps/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart' as Geocoding;
+import 'package:location/location.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../Components/bottom_nav_bar.dart';
-import '../../Components/default_botton.dart';
 
 class BodyHome extends StatefulWidget {
   const BodyHome({Key? key}) : super(key: key);
@@ -15,6 +14,60 @@ class BodyHome extends StatefulWidget {
 }
 
 class _BodyState extends State<BodyHome> {
+  late bool clicado = false;
+  late bool _serviceEnabled; //verificar o GPS (on/off)
+  late PermissionStatus _permissionGranted; //verificar a permissão de acesso
+  LocationData? _userLocation;
+  late String? address;
+
+  Future<void> _getUserLocation() async {
+    Location location = Location();
+
+    //1. verificar se o serviço de localização está ativado
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    //2. solicitar a permissão para o app acessar a localização
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    final _locationData = await location.getLocation();
+
+    Future<List<Geocoding.Placemark>> places;
+    double? lat;
+    double? lng;
+    setState(() {
+      _userLocation = _locationData;
+      lat = _userLocation!.latitude;
+      lng = _userLocation!.longitude;
+      places = Geocoding.placemarkFromCoordinates(lat!, lng!,
+          localeIdentifier: "pt_BR");
+      places.then((value) {
+        Geocoding.Placemark place = value[0];
+        address = place.street; //nome da rua
+        print(_locationData.accuracy); //acurácia da localização
+      });
+    });
+  }
+
+  _ButtomClick() {
+    if (clicado == false) {
+      clicado = true;
+    } else {
+      clicado = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,12 +105,56 @@ class _BodyState extends State<BodyHome> {
                         ),
                       ),
                     ),
-                    DefaultButton(
-                      text: "Iniciar",
-                      press: () {
-                        Navigator.pushReplacementNamed(
-                            context, BottomNavBar.routeName);
-                      },
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (_userLocation != null)
+                            Text(
+                              'LAT: ${_userLocation!.latitude}, LNG: ${_userLocation!.longitude}'
+                                      "\n" +
+                                  address!,
+                              textAlign: TextAlign.center,
+                            ),
+                          // DefaultButton(
+                          //   text: "Iniciar",
+                          //   press: () {
+                          //     _getUserLocation,
+                          //     Navigator.pushReplacementNamed(
+                          //         context, BottomNavBar.routeName);
+                          //   },
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: EdgeInsets.all(5.h),
+                              primary: clicado == false
+                                  ? const Color.fromRGBO(69, 165, 39, 1)
+                                  : const Color.fromRGBO(
+                                      194, 42, 42, 1), // <-- Button color
+                              onPrimary: Colors.red, // <-- Splash color
+                            ),
+                            onPressed: () => [
+                              _getUserLocation(),
+                              _ButtomClick(),
+                            ],
+                            child: clicado == false
+                                ? const Text(
+                                    'Iniciar',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                : const Text(
+                                    'Parar',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
