@@ -1,12 +1,14 @@
-import 'package:app_gps/Screens/Home/HomeScreen.dart';
+import 'package:app_gps/Screens/Home/home.dart';
 import 'package:app_gps/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import 'Screens/Components/bottom_nav_bar.dart';
+import 'db/database.dart';
 
 class Routes extends StatelessWidget {
-  const Routes({Key? key}) : super(key: key);
+  const Routes({Key? key, required this.db}) : super(key: key);
+  final AppDatabase db;
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +16,12 @@ class Routes extends StatelessWidget {
       builder: (context, orientation, deviceType) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Rotas GPS',
+          title: 'GPS',
           theme: theme(),
           initialRoute: BottomNavBar.routeName,
           routes: {
-            BottomNavBar.routeName: (context) => const BottomNavBar(),
-            HomeScreen.routeName: (context) => const HomeScreen(),
+            BottomNavBar.routeName: (context) => BottomNavBar(db: db),
+            Home.routeName: (context) => Home(db: db),
           },
         );
       },

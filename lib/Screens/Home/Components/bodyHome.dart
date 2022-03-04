@@ -1,16 +1,20 @@
 // ignore_for_file: file_names, library_prefixes, avoid_print, non_constant_identifier_names
 
 import 'package:app_gps/constants.dart';
+import 'package:app_gps/db/database.dart';
+import 'package:app_gps/entitys/local_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart' as Geocoding;
 import 'package:location/location.dart';
 import 'package:sizer/sizer.dart';
 
 class BodyHome extends StatefulWidget {
-  const BodyHome({Key? key}) : super(key: key);
+  const BodyHome({Key? key, required this.db, this.local}) : super(key: key);
+  final AppDatabase db;
+  final LocalEntity? local;
 
   @override
-  State<BodyHome> createState() => _BodyState();
+  State<BodyHome> createState() => _BodyState(db, local);
 }
 
 class _BodyState extends State<BodyHome> {
@@ -67,6 +71,18 @@ class _BodyState extends State<BodyHome> {
       clicado = false;
     }
   }
+
+  final AppDatabase db;
+  final LocalEntity? local;
+  _BodyState(this.db, this.local);
+
+  var latitude = '08644124';
+  var longitude = '3606913';
+  var pais = 'Brasil';
+  var estado = 'Pernabuco';
+  var cidade = 'Garanhuns';
+  var rua = 'Rua numero 2';
+  var cep = '55369050';
 
   @override
   Widget build(BuildContext context) {
