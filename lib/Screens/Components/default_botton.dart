@@ -13,12 +13,12 @@ class DefaultButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 13.h,
-      height: 13.h,
+      width: 12.h,
+      height: 12.h,
       child: TextButton(
         style: TextButton.styleFrom(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           primary: Colors.white,
           backgroundColor: const Color.fromRGBO(69, 165, 39, 1),
         ),
@@ -26,7 +26,7 @@ class DefaultButton extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-            fontSize: 20.sp,
+            fontSize: 15.sp,
             color: Colors.white,
           ),
         ),

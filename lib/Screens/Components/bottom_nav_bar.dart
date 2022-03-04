@@ -1,29 +1,33 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, no_logic_in_create_state
 
-import 'package:app_gps/Screens/Home/HomeScreen.dart';
+import 'package:app_gps/Screens/Home/home.dart';
+import 'package:app_gps/db/database.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../constants.dart';
-import '../Home/HomeScreen.dart';
+import '../Home/home.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
-  static String routeName = "/bottom_bar";
+  const BottomNavBar({Key? key, required this.db}) : super(key: key);
+  final AppDatabase db;
 
   @override
-  _BottomNavBarState createState() => _BottomNavBarState();
+  _BottomNavBarState createState() => _BottomNavBarState(db);
+  static String routeName = "/bottom_bar";
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+  final AppDatabase db;
+  _BottomNavBarState(this.db);
 
   int index = 0;
   @override
   Widget build(BuildContext context) {
     final screens = [
-      HomeScreen(),
+      Home(db: db),
     ];
 
     return SafeArea(
