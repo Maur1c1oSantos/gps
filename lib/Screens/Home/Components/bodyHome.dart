@@ -78,8 +78,6 @@ class _BodyState extends State<BodyHome> {
                               DateTime.now().toUtc().toString(),
                               latitude,
                               longitude,
-                              pais,
-                              estado,
                               cidade,
                               rua,
                               cep),

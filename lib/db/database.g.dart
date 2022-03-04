@@ -82,7 +82,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Local` (`latitude` TEXT NOT NULL, `longitude` TEXT NOT NULL, `pais` TEXT NOT NULL, `estado` TEXT NOT NULL, `cidade` TEXT NOT NULL, `rua` TEXT NOT NULL, `cep` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createdAt` TEXT NOT NULL, `updateAt` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Local` (`latitude` TEXT NOT NULL, `longitude` TEXT NOT NULL, `cidade` TEXT NOT NULL, `rua` TEXT NOT NULL, `cep` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createdAt` TEXT NOT NULL, `updateAt` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -106,8 +106,6 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
             (LocalEntity item) => <String, Object?>{
                   'latitude': item.latitude,
                   'longitude': item.longitude,
-                  'pais': item.pais,
-                  'estado': item.estado,
                   'cidade': item.cidade,
                   'rua': item.rua,
                   'cep': item.cep,
@@ -122,8 +120,6 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
             (LocalEntity item) => <String, Object?>{
                   'latitude': item.latitude,
                   'longitude': item.longitude,
-                  'pais': item.pais,
-                  'estado': item.estado,
                   'cidade': item.cidade,
                   'rua': item.rua,
                   'cep': item.cep,
@@ -138,8 +134,6 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
             (LocalEntity item) => <String, Object?>{
                   'latitude': item.latitude,
                   'longitude': item.longitude,
-                  'pais': item.pais,
-                  'estado': item.estado,
                   'cidade': item.cidade,
                   'rua': item.rua,
                   'cep': item.cep,
@@ -169,8 +163,6 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
             row['updateAt'] as String,
             row['latitude'] as String,
             row['longitude'] as String,
-            row['pais'] as String,
-            row['estado'] as String,
             row['cidade'] as String,
             row['rua'] as String,
             row['cep'] as String),
@@ -186,8 +178,6 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
             row['updateAt'] as String,
             row['latitude'] as String,
             row['longitude'] as String,
-            row['pais'] as String,
-            row['estado'] as String,
             row['cidade'] as String,
             row['rua'] as String,
             row['cep'] as String));
