@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, library_prefixes, avoid_print, non_constant_identifier_names
+// ignore_for_file: file_names, library_prefixes, avoid_print, non_constant_identifier_names, no_logic_in_create_state
 
 import 'package:app_gps/constants.dart';
 import 'package:app_gps/db/database.dart';
