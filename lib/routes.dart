@@ -1,4 +1,5 @@
 import 'package:app_gps/Screens/Home/home.dart';
+import 'package:app_gps/Screens/Map/map.dart';
 import 'package:app_gps/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -22,6 +23,7 @@ class Routes extends StatelessWidget {
           routes: {
             BottomNavBar.routeName: (context) => BottomNavBar(db: db),
             Home.routeName: (context) => Home(db: db),
+            Map.routeName: (context) => const Map(),
           },
         );
       },

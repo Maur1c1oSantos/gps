@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, library_prefixes, avoid_print, non_constant_identifier_names, no_logic_in_create_state
 
+import 'dart:async';
+
 import 'package:app_gps/constants.dart';
 import 'package:app_gps/db/database.dart';
 import 'package:app_gps/entitys/local_entity.dart';
@@ -9,25 +11,32 @@ import 'package:location/location.dart';
 import 'package:sizer/sizer.dart';
 
 class BodyHome extends StatefulWidget {
-  const BodyHome({Key? key, required this.db, this.local}) : super(key: key);
+  const BodyHome({Key? key, required this.db}) : super(key: key);
   final AppDatabase db;
-  final LocalEntity? local;
 
   @override
-  State<BodyHome> createState() => _BodyState(db, local);
+  State<BodyHome> createState() => _BodyState(db);
 }
 
 class _BodyState extends State<BodyHome> {
-  late bool clicado = false;
-  late bool _serviceEnabled; //verificar o GPS (on/off)
-  late PermissionStatus _permissionGranted; //verificar a permissão de acesso
+  late bool _serviceEnabled;
+  late PermissionStatus _permissionGranted;
   LocationData? _userLocation;
   late String? address;
+  late bool clicado;
+  late LocalEntity local;
+  final AppDatabase db;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserLocation();
+    clicado = false;
+  }
 
   Future<void> _getUserLocation() async {
     Location location = Location();
 
-    //1. verificar se o serviço de localização está ativado
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
@@ -36,7 +45,6 @@ class _BodyState extends State<BodyHome> {
       }
     }
 
-    //2. solicitar a permissão para o app acessar a localização
     _permissionGranted = await location.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
@@ -50,40 +58,51 @@ class _BodyState extends State<BodyHome> {
     Future<List<Geocoding.Placemark>> places;
     double? lat;
     double? lng;
-    setState(() {
-      _userLocation = _locationData;
-      lat = _userLocation!.latitude;
-      lng = _userLocation!.longitude;
-      places = Geocoding.placemarkFromCoordinates(lat!, lng!,
-          localeIdentifier: "pt_BR");
-      places.then((value) {
-        Geocoding.Placemark place = value[0];
-        address = place.street; //nome da rua
-        print(_locationData.accuracy); //acurácia da localização
-      });
-    });
+
+    setState(
+      () {
+        _userLocation = _locationData;
+        lat = _userLocation!.latitude;
+        lng = _userLocation!.longitude;
+        places = Geocoding.placemarkFromCoordinates(lat!, lng!,
+            localeIdentifier: "pt_BR");
+        places.then(
+          (value) {
+            Geocoding.Placemark place = value[0];
+            address = place.street;
+            // db.localRepositoryDao.insertItem(
+            //   LocalEntity(
+            //       createdAt: DateTime.now().toUtc().toString(),
+            //       latitude: lat,
+            //       longitude: lng,
+            //       pais: place.country,
+            //       estado: place.locality,
+            //       cidade: place.subLocality,
+            //       rua: place.street,
+            //       cep: place.postalCode),
+            // );
+            print(_locationData.accuracy);
+          },
+        );
+      },
+    );
   }
 
   _ButtomClick() {
-    if (clicado == false) {
-      clicado = true;
-    } else {
-      clicado = false;
-    }
+    clicado == false ? clicado = true : clicado = false;
+    _pegaPosicao();
   }
 
-  final AppDatabase db;
-  final LocalEntity? local;
-  _BodyState(this.db, this.local);
+  _pegaPosicao() {
+    Timer(
+      const Duration(seconds: 30),
+      () => [
+        if (clicado == true) {_getUserLocation(), _pegaPosicao()}
+      ],
+    );
+  }
 
-  var latitude = '08644124';
-  var longitude = '3606913';
-  var pais = 'Brasil';
-  var estado = 'Pernabuco';
-  var cidade = 'Garanhuns';
-  var rua = 'Rua numero 2';
-  var cep = '55369050';
-
+  _BodyState(this.db);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,6 +132,7 @@ class _BodyState extends State<BodyHome> {
                           ),
                           // color: Colors.black45,
                           child: InkWell(
+                            child: Container(),
                             splashColor: kPrimaryColor.withAlpha(30),
                             onTap: () {
                               debugPrint('Card tapped.');
@@ -132,22 +152,14 @@ class _BodyState extends State<BodyHome> {
                                   address!,
                               textAlign: TextAlign.center,
                             ),
-                          // DefaultButton(
-                          //   text: "Iniciar",
-                          //   press: () {
-                          //     _getUserLocation,
-                          //     Navigator.pushReplacementNamed(
-                          //         context, BottomNavBar.routeName);
-                          //   },
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               shape: const CircleBorder(),
                               padding: EdgeInsets.all(5.h),
                               primary: clicado == false
                                   ? const Color.fromRGBO(69, 165, 39, 1)
-                                  : const Color.fromRGBO(
-                                      194, 42, 42, 1), // <-- Button color
-                              onPrimary: Colors.red, // <-- Splash color
+                                  : const Color.fromRGBO(194, 42, 42, 1),
+                              onPrimary: Colors.red,
                             ),
                             onPressed: () => [
                               _getUserLocation(),

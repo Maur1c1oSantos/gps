@@ -1,13 +1,13 @@
 import 'package:app_gps/entitys/entity_base.dart';
 import 'package:floor/floor.dart';
 
-abstract class IRepositoryDaoInterface<Table extends EntityBase> {
+abstract class IRepositoryDaoInterface<T extends EntityBase> {
   @insert
-  Future<int> insertItem(Table item);
+  Future<int> insertItem(T item);
 
   @update
-  Future<int> updateItem(Table item);
+  Future<int> updateItem(T item);
 
   @delete
-  Future<int> deleteItem(Table item);
+  Future<int> deleteItem(T item);
 }

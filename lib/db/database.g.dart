@@ -82,7 +82,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Local` (`latitude` TEXT NOT NULL, `longitude` TEXT NOT NULL, `cidade` TEXT NOT NULL, `rua` TEXT NOT NULL, `cep` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `createdAt` TEXT NOT NULL, `updateAt` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Locais` (`latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `pais` TEXT NOT NULL, `estado` TEXT NOT NULL, `cidade` TEXT NOT NULL, `rua` TEXT NOT NULL, `cep` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `createdAt` TEXT NOT NULL, `updateAt` TEXT)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -102,10 +102,12 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
       : _queryAdapter = QueryAdapter(database),
         _localEntityInsertionAdapter = InsertionAdapter(
             database,
-            'Local',
+            'Locais',
             (LocalEntity item) => <String, Object?>{
                   'latitude': item.latitude,
                   'longitude': item.longitude,
+                  'pais': item.pais,
+                  'estado': item.estado,
                   'cidade': item.cidade,
                   'rua': item.rua,
                   'cep': item.cep,
@@ -115,11 +117,13 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
                 }),
         _localEntityUpdateAdapter = UpdateAdapter(
             database,
-            'Local',
+            'Locais',
             ['id'],
             (LocalEntity item) => <String, Object?>{
                   'latitude': item.latitude,
                   'longitude': item.longitude,
+                  'pais': item.pais,
+                  'estado': item.estado,
                   'cidade': item.cidade,
                   'rua': item.rua,
                   'cep': item.cep,
@@ -129,11 +133,13 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
                 }),
         _localEntityDeletionAdapter = DeletionAdapter(
             database,
-            'Local',
+            'Locais',
             ['id'],
             (LocalEntity item) => <String, Object?>{
                   'latitude': item.latitude,
                   'longitude': item.longitude,
+                  'pais': item.pais,
+                  'estado': item.estado,
                   'cidade': item.cidade,
                   'rua': item.rua,
                   'cep': item.cep,
@@ -158,14 +164,16 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
   Future<LocalEntity?> getById(int id) async {
     return _queryAdapter.query('SELECT * FROM Todos WHERE id = ?1',
         mapper: (Map<String, Object?> row) => LocalEntity(
-            row['id'] as int,
-            row['createdAt'] as String,
-            row['updateAt'] as String,
-            row['latitude'] as String,
-            row['longitude'] as String,
-            row['cidade'] as String,
-            row['rua'] as String,
-            row['cep'] as String),
+            id: row['id'] as int?,
+            createdAt: row['createdAt'] as String,
+            updateAt: row['updateAt'] as String?,
+            latitude: row['latitude'] as double,
+            longitude: row['longitude'] as double,
+            pais: row['pais'] as String,
+            estado: row['estado'] as String,
+            cidade: row['cidade'] as String,
+            rua: row['rua'] as String,
+            cep: row['cep'] as String),
         arguments: [id]);
   }
 
@@ -173,14 +181,16 @@ class _$LocalRepositoryDao extends LocalRepositoryDao {
   Future<List<LocalEntity?>> getAll() async {
     return _queryAdapter.queryList('SELECT * FROM Todos',
         mapper: (Map<String, Object?> row) => LocalEntity(
-            row['id'] as int,
-            row['createdAt'] as String,
-            row['updateAt'] as String,
-            row['latitude'] as String,
-            row['longitude'] as String,
-            row['cidade'] as String,
-            row['rua'] as String,
-            row['cep'] as String));
+            id: row['id'] as int?,
+            createdAt: row['createdAt'] as String,
+            updateAt: row['updateAt'] as String?,
+            latitude: row['latitude'] as double,
+            longitude: row['longitude'] as double,
+            pais: row['pais'] as String,
+            estado: row['estado'] as String,
+            cidade: row['cidade'] as String,
+            rua: row['rua'] as String,
+            cep: row['cep'] as String));
   }
 
   @override
