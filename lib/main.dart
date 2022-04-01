@@ -4,9 +4,10 @@ import 'routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final db = DatabaseHandler();
+  await db.initializeDB();
+
   runApp(
-    Routes(
-      db: await $FloorAppDatabase.databaseBuilder('app_database.db').build(),
-    ),
+    const Routes(),
   );
 }
